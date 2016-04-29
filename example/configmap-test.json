@@ -9,6 +9,7 @@
         }
     },
     "data": {
-        "environment": "TEST"
+        "environment": "TEST",
+        "ui.properties": "color=red\n"
     }
 }

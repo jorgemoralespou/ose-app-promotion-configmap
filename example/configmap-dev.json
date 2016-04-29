@@ -9,6 +9,7 @@
         }
     },
     "data": {
-        "environment": "DEVELOPMENT"
+        "environment": "DEVELOPMENT",
+        "ui.properties": "color=green\n"
     }
 }

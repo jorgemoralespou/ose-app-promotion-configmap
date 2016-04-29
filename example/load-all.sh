@@ -1,34 +1,40 @@
 #!/bin/sh
 
-echo "Creating the projects...."
-oc adm new-project node-app-dev
-echo "node-app-dev project created for developers"
-oc adm new-project node-app-test
-echo "node-app-test project created for testers"
+# You need 2 users (dev and test)
+
+
+echo "Creating the Development project with user dev ...."
+oc login 10.2.2.2:8443 -u dev -p dev
+oc new-project node-app-dev
+oc create -f configmap-dev.json
+oc create -f node-app-deployment.json
+oc create -f node-app-build.json
+
 
 echo "Granting puller rights for the deployer serviceaccount in node-app-test project"
-
-# To pull the image
-#oc policy add-role-to-user system:image-puller system:serviceaccount:node-app-test:deployer -n node-app-dev
 # TODO: Why the below and not the above. Also, those credentials seem to wide.
-oc policy add-role-to-user edit system:serviceaccount:node-app-test:default -n node-app-dev
+# This is for the serviceaccount to be able to get the image
+oc policy add-role-to-user edit system:serviceaccount:node-app-test:default
 
-echo "Creating the deployment configuration for our applications"
-echo "Creating configuration....."
-oc create -f configmap-dev.json -n node-app-dev
-echo "Configuration created for project node-app-dev"
-oc create -f configmap-test.json -n node-app-test
-echo "Configuration created for project node-app-test"
 
-echo "Creating configuration....."
-oc create -f node-app-example-dev.json -n node-app-dev
-echo "Deployment created for project node-app-dev"
-oc create -f node-app-example-test.json -n node-app-test
-echo "Deployment created for project node-app-test"
+oc login 10.2.2.2:8443 -u test -p test
+oc new-project node-app-test
+oc create -f configmap-test.json
+oc create -f node-app-deployment.json
+# This is for the user dev to be able to modify(tag) an ImageStream
+oc policy add-role-to-user edit dev
 
-echo "Building the app as developer"
-oc start-build node-app -n node-app-dev --from-dir=.. --follow
+# Login in back as developer
+oc login 10.2.2.2:8443 -u dev -p dev
+echo ""
+echo ""
+echo "You're now user: dev"
 
+echo ""
+echo "Building the app as developer:"
+echo ""
+echo "  oc start-build node-app -n node-app-dev --from-dir=.. --follow  "
+echo ""
 echo ""
 echo ""
 echo "If you want to promote the application, you can:"

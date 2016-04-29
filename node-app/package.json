@@ -4,6 +4,7 @@
   "description": "node-echo",
   "main": "server.js",
   "dependencies": {
+     "properties-reader": "^0.0.15"
   },
   "devDependencies": {
     "nodemon": "*"

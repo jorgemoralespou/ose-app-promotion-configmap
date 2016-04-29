@@ -1,0 +1,23 @@
+= Image promotion using ConfigMaps in OpenShift 3
+In this example, we're demonstrating how to promote images from environment to environment.
+While doing this promotion, we're using the same DeploymentConfiguration as we have all the Configuration required for the app externalized into a ConfigMap.
+The same ConfigMap is deployed in every environment, but with different values for the configuration
+
+== How to run
+In the examples folder, there is a ./load-all.sh script that will set up everything for you
+
+There will be 2 users of 2 projects. In this example a project will resemble a stage/environment for the given application:
+
+- User:*dev*  Project:*node-app-dev*
+- User:*test* Project:*node-app-test*
+
+Both will have a node.js application that will show details of the environment is running from values defined in the ConfigMap. Every project/environment will have their own values.
+
+== How to promote the application from dev to test
+Just tag the image doing:
+
+----
+oc tag node-app-dev/node-app:latest node-app-test/node-app:latest
+----
+
+You'll see how the application get deployed into the test environment.
