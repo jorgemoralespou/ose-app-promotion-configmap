@@ -9,7 +9,7 @@
         }
     },
     "data": {
-        "environment": "TEST",
+        "message": "This application is running in: TEST",
         "ui.properties": "color=red\n"
     }
 }

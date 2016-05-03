@@ -1,0 +1,25 @@
+    {
+      "kind": "ClusterRole",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "image-tagger"
+      },
+      "rules": [
+        {
+          "verbs": [
+            "get",
+            "list",
+            "edit"
+          ],
+          "attributeRestrictions": null,
+          "apiGroups": null,
+          "resources": [
+            "imagestreamimages",
+            "imagestreamimports",
+            "imagestreammappings",
+            "imagestreams",
+            "imagestreamtags"
+          ]
+        }
+      ]
+    }
