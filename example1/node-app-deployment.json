@@ -1,0 +1,186 @@
+{
+  "kind": "List",
+  "apiVersion": "v1",
+  "metadata": {},
+  "items": [
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "node-app",
+        "generation": 1,
+        "labels": {
+          "app": "node-app"
+        }
+      },
+      "spec": {
+        "tags": [
+          {
+            "name": "latest",
+            "from": {
+              "kind": "ImageStreamTag",
+              "name": "node-app:latest"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "node-app",
+        "labels": {
+          "app": "node-app"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "type": "Rolling",
+          "rollingParams": {
+            "updatePeriodSeconds": 1,
+            "intervalSeconds": 1,
+            "timeoutSeconds": 600,
+            "maxUnavailable": "25%",
+            "maxSurge": "25%"
+          },
+          "resources": {}
+        },
+        "triggers": [
+          {
+            "type": "ConfigChange"
+          },
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "node-app"
+              ],
+              "from": {
+                "kind": "ImageStreamTag",
+                "name": "node-app:latest"
+              }
+            }
+          }
+        ],
+        "replicas": 1,
+        "test": false,
+        "selector": {
+          "app": "node-app",
+          "deploymentconfig": "node-app"
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "node-app",
+              "deploymentconfig": "node-app"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "name": "node-app",
+                "image": "node-app",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "env": [
+                  {
+                    "name": "OPENSHIFT_NODEJS_PORT",
+                    "value": "8080"
+                  },
+                  {
+                    "name": "ENVIRONMENT",
+                    "valueFrom": {
+                      "configMapKeyRef": {
+                        "name": "config",
+                        "key": "environment"
+                      }
+                    }
+                  }
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "app-config",
+                    "mountPath": "/etc/node-app/"
+                  }
+                ],
+                "resources": {},
+                "terminationMessagePath": "/dev/termination-log",
+                "imagePullPolicy": "Always"
+              }
+            ],
+            "volumes": [
+              {
+                "name": "app-config",
+                "configMap": {
+                  "name": "config",
+                  "items": [
+                    {
+                      "key": "ui.properties",
+                      "path": "node-app.config"
+                    }
+                  ]
+                }
+              }
+            ],
+            "restartPolicy": "Always",
+            "terminationGracePeriodSeconds": 30,
+            "dnsPolicy": "ClusterFirst",
+            "securityContext": {}
+          }
+        }
+      }
+    },
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "node-app",
+        "labels": {
+          "app": "node-app"
+        }
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "8080-tcp",
+            "protocol": "TCP",
+            "port": 8080,
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "app": "node-app",
+          "deploymentconfig": "node-app"
+        },
+        "type": "ClusterIP",
+        "sessionAffinity": "None"
+      }
+    },
+    {
+      "kind": "Route",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "node-app",
+        "labels": {
+          "app": "node-app"
+        }
+      },
+      "spec": {
+        "host": "",
+        "to": {
+          "kind": "Service",
+          "name": "node-app"
+        },
+        "port": {
+          "targetPort": "8080-tcp"
+        }
+      }
+    }
+  ]
+}

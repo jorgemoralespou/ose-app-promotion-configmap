@@ -1,0 +1,66 @@
+{
+  "kind": "List",
+  "apiVersion": "v1",
+  "metadata": {},
+  "items": [
+    {
+      "kind": "BuildConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "node-app",
+        "labels": {
+          "app": "node-app"
+        }
+      },
+      "spec": {
+        "triggers": [
+          {
+            "type": "GitHub",
+            "github": {
+              "secret": "secret"
+            }
+          },
+          {
+            "type": "Generic",
+            "generic": {
+              "secret": "secret"
+            }
+          },
+          {
+            "type": "ConfigChange"
+          },
+          {
+            "type": "ImageChange",
+            "imageChange": {}
+          }
+        ],
+        "source": {
+          "type": "Git",
+          "git": {
+            "uri": "https://github.com/jorgemoralespou/ose-app-promotion-configmap.git"
+          },
+          "contextDir": "node-app",
+          "secrets": []
+        },
+        "strategy": {
+          "type": "Source",
+          "sourceStrategy": {
+            "from": {
+              "kind": "ImageStreamTag",
+              "namespace": "openshift",
+              "name": "nodejs:0.10"
+            }
+          }
+        },
+        "output": {
+          "to": {
+            "kind": "ImageStreamTag",
+            "name": "node-app:latest"
+          }
+        },
+        "resources": {},
+        "postCommit": {}
+      }
+    }
+  ]
+}
