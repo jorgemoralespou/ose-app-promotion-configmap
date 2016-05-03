@@ -94,11 +94,11 @@
                     "value": "8080"
                   },
                   {
-                    "name": "ENVIRONMENT",
+                    "name": "iBACKGROUND_MSG",
                     "valueFrom": {
                       "configMapKeyRef": {
                         "name": "config",
-                        "key": "environment"
+                        "key": "message"
                       }
                     }
                   }
