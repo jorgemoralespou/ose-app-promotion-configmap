@@ -9,7 +9,9 @@
           "verbs": [
             "get",
             "list",
-            "edit"
+            "edit",
+            "create",
+            "update"
           ],
           "attributeRestrictions": null,
           "apiGroups": null,
